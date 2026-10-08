@@ -1,0 +1,25 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/driver.schema.json",
+  "id": "printer-p1-a1",
+  "name": "P1, A1 and A2 series printer",
+  "transport": "mqtt",
+  "models": ["P1P", "P1S", "A1", "A1 mini", "A2L"],
+  "modelCodes": {
+    "C11": "P1P",
+    "C12": "P1S",
+    "N2S": "A1",
+    "N1": "A1 mini",
+    "N9": "A2L"
+  },
+  "modelSeries": {
+    "P1P": "P series",
+    "P1S": "P series",
+    "A1": "A series",
+    "A1 mini": "A series",
+    "A2L": "A series"
+  },
+  "defaultIcon": "printer",
+  "kind": "declarative",
+  "profile": "./profile.json",
+  "setup": "./setup.json"
+}

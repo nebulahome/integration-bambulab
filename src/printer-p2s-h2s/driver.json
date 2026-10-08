@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/driver.schema.json",
+  "id": "printer-p2s-h2s",
+  "name": "P2S and H2S printer",
+  "transport": "mqtt",
+  "models": ["P2S", "H2S"],
+  "modelCodes": {
+    "N7": "P2S",
+    "O1S": "H2S"
+  },
+  "modelSeries": {
+    "P2S": "P series",
+    "H2S": "H series"
+  },
+  "defaultIcon": "printer",
+  "kind": "declarative",
+  "profile": "./profile.json",
+  "setup": "./setup.json"
+}

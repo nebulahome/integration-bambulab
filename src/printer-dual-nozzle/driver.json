@@ -1,0 +1,24 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/driver.schema.json",
+  "id": "printer-dual-nozzle",
+  "name": "Dual-nozzle printer",
+  "transport": "mqtt",
+  "models": ["H2D", "H2D Pro", "H2C", "X2D"],
+  "modelCodes": {
+    "O1D": "H2D",
+    "O1E": "H2D Pro",
+    "O1C": "H2C",
+    "O1C2": "H2C",
+    "N6": "X2D"
+  },
+  "modelSeries": {
+    "H2D": "H series",
+    "H2D Pro": "H series",
+    "H2C": "H series",
+    "X2D": "X series"
+  },
+  "defaultIcon": "printer",
+  "kind": "declarative",
+  "profile": "./profile.json",
+  "setup": "./setup.json"
+}

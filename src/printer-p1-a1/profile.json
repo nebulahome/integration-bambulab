@@ -1,0 +1,972 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/profile.schema.json",
+  "discovery": {
+    "scan": {
+      "filter": "device/+/report"
+    },
+    "claim": [
+      {
+        "path": "message.print",
+        "exists": true
+      },
+      {
+        "path": "segments[1]",
+        "exists": true
+      }
+    ],
+    "identity": {
+      "externalId": "segments[1]"
+    }
+  },
+  "subscriptions": [
+    {
+      "op": "topic",
+      "args": {
+        "filter": [
+          "device",
+          {
+            "$": "segments[1]"
+          },
+          "report"
+        ]
+      }
+    },
+    {
+      "op": "publish",
+      "args": {
+        "topic": [
+          "device",
+          {
+            "$": "segments[1]"
+          },
+          "request"
+        ],
+        "payload": {
+          "pushing": {
+            "sequence_id": "0",
+            "command": "pushall",
+            "version": 1,
+            "push_target": 1
+          }
+        },
+        "everyMs": 300000
+      }
+    }
+  ],
+  "entities": [
+    {
+      "domain": "light",
+      "objectId": "chamber_light",
+      "name": "Chamber light",
+      "icon": "light",
+      "capabilities": {
+        "on_off": {}
+      },
+      "state": {
+        "on_off": {
+          "isOn": {
+            "path": "message.print.lights_report[0].mode",
+            "equals": "on"
+          }
+        }
+      },
+      "commands": {
+        "on_off.turn_on": {
+          "op": "publish",
+          "args": {
+            "topic": [
+              "device",
+              {
+                "$": "device.segments[1]"
+              },
+              "request"
+            ],
+            "payload": {
+              "system": {
+                "sequence_id": "0",
+                "command": "ledctrl",
+                "led_node": "chamber_light",
+                "led_mode": "on",
+                "led_on_time": 500,
+                "led_off_time": 500,
+                "loop_times": 0,
+                "interval_time": 0
+              }
+            }
+          }
+        },
+        "on_off.turn_off": {
+          "op": "publish",
+          "args": {
+            "topic": [
+              "device",
+              {
+                "$": "device.segments[1]"
+              },
+              "request"
+            ],
+            "payload": {
+              "system": {
+                "sequence_id": "0",
+                "command": "ledctrl",
+                "led_node": "chamber_light",
+                "led_mode": "off",
+                "led_on_time": 500,
+                "led_off_time": 500,
+                "loop_times": 0,
+                "interval_time": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "domain": "camera",
+      "objectId": "chamber_camera",
+      "name": "Chamber camera",
+      "icon": "video",
+      "capabilities": {
+        "camera": {
+          "hasSnapshot": true,
+          "hasStream": true,
+          "hasRecording": false
+        }
+      },
+      "state": {
+        "camera": {
+          "isStreamAvailable": {
+            "path": "message.print.ipcam.ipcam_dev",
+            "map": {
+              "0": false
+            },
+            "default": true
+          }
+        }
+      },
+      "stream": {
+        "source": "bambulab/camera",
+        "args": {
+          "kind": "chamber-image"
+        }
+      }
+    },
+    {
+      "domain": "sensor",
+      "objectId": "nozzle_temperature",
+      "name": "Nozzle temperature",
+      "icon": "thermometer",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": [
+            {
+              "path": "message.print.device.extruder.info[0].temp",
+              "bits": [0, 16]
+            },
+            "message.print.nozzle_temper"
+          ]
+        }
+      },
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement",
+      "displayPrecision": 1
+    },
+    {
+      "domain": "sensor",
+      "objectId": "nozzle_target_temperature",
+      "name": "Nozzle target",
+      "icon": "thermometer",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": [
+            {
+              "path": "message.print.device.extruder.info[0].temp",
+              "bits": [16, 16]
+            },
+            "message.print.nozzle_target_temper"
+          ]
+        }
+      },
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "nozzle_diameter",
+      "name": "Nozzle diameter",
+      "icon": "gauge",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.nozzle_diameter",
+            "base": 10
+          }
+        }
+      },
+      "unitOfMeasurement": "mm",
+      "displayPrecision": 1
+    },
+    {
+      "domain": "sensor",
+      "objectId": "bed_temperature",
+      "name": "Bed temperature",
+      "icon": "heater",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": [
+            {
+              "path": "message.print.device.bed.info.temp",
+              "bits": [0, 16]
+            },
+            "message.print.bed_temper"
+          ]
+        }
+      },
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement",
+      "displayPrecision": 1
+    },
+    {
+      "domain": "sensor",
+      "objectId": "bed_target_temperature",
+      "name": "Bed target",
+      "icon": "heater",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": [
+            {
+              "path": "message.print.device.bed.info.temp",
+              "bits": [16, 16]
+            },
+            "message.print.bed_target_temper"
+          ]
+        }
+      },
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "binary_sensor",
+      "objectId": "printing",
+      "name": "Printing",
+      "icon": "printer",
+      "capabilities": {
+        "sensor_binary": {}
+      },
+      "state": {
+        "sensor_binary": {
+          "isOn": {
+            "path": "message.print.gcode_state",
+            "equals": "RUNNING"
+          }
+        }
+      },
+      "deviceClass": "running"
+    },
+    {
+      "domain": "sensor",
+      "objectId": "print_status",
+      "name": "Print status",
+      "icon": "printer",
+      "capabilities": {
+        "sensor_text": {}
+      },
+      "state": {
+        "sensor_text": {
+          "value": {
+            "path": "message.print.gcode_state",
+            "map": {
+              "IDLE": "Idle",
+              "INIT": "Starting",
+              "PREPARE": "Preparing",
+              "SLICING": "Slicing",
+              "RUNNING": "Printing",
+              "PAUSE": "Paused",
+              "FINISH": "Finished",
+              "FAILED": "Failed",
+              "OFFLINE": "Offline"
+            },
+            "default": "Unknown"
+          }
+        }
+      }
+    },
+    {
+      "domain": "sensor",
+      "objectId": "stage",
+      "name": "Stage",
+      "icon": "list",
+      "capabilities": {
+        "sensor_text": {}
+      },
+      "state": {
+        "sensor_text": {
+          "value": {
+            "path": "message.print.stg_cur",
+            "map": {
+              "0": "Printing",
+              "1": "Levelling the bed",
+              "2": "Preheating the bed",
+              "3": "Vibration compensation",
+              "4": "Changing filament",
+              "5": "Paused by M400",
+              "6": "Paused: filament ran out",
+              "7": "Heating the hotend",
+              "8": "Calibrating extrusion",
+              "9": "Scanning the bed surface",
+              "10": "Inspecting the first layer",
+              "11": "Identifying the build plate",
+              "12": "Calibrating the micro lidar",
+              "13": "Homing the toolhead",
+              "14": "Cleaning the nozzle tip",
+              "15": "Checking the extruder temperature",
+              "16": "Paused by the user",
+              "17": "Paused: the front cover fell",
+              "18": "Calibrating the micro lidar",
+              "19": "Calibrating extrusion flow",
+              "20": "Paused: nozzle temperature fault",
+              "21": "Paused: bed temperature fault",
+              "22": "Unloading filament",
+              "23": "Paused: skipped step",
+              "24": "Loading filament",
+              "25": "Calibrating motor noise",
+              "26": "Paused: AMS lost",
+              "27": "Paused: heatbreak fan too slow",
+              "28": "Paused: chamber temperature fault",
+              "29": "Cooling the chamber",
+              "30": "Paused by the G-code",
+              "31": "Motor noise check",
+              "32": "Paused: filament around the nozzle",
+              "33": "Paused: cutter fault",
+              "34": "Paused: first layer fault",
+              "35": "Paused: nozzle clogged",
+              "36": "Checking accuracy before calibration",
+              "37": "Calibrating absolute accuracy",
+              "38": "Checking accuracy after calibration",
+              "39": "Calibrating the nozzle offset",
+              "40": "Levelling the bed hot",
+              "41": "Checking the quick release",
+              "42": "Checking the door and cover",
+              "43": "Calibrating the laser",
+              "44": "Checking the platform",
+              "45": "Checking the bird's-eye camera",
+              "46": "Calibrating the bird's-eye camera",
+              "47": "Levelling the bed, phase 1",
+              "48": "Levelling the bed, phase 2",
+              "49": "Heating the chamber",
+              "50": "Cooling the bed",
+              "51": "Printing calibration lines",
+              "52": "Checking the material",
+              "53": "Calibrating the live view camera",
+              "54": "Waiting for the bed temperature",
+              "55": "Checking the material position",
+              "56": "Calibrating the cutter offset",
+              "57": "Measuring the surface",
+              "58": "Thermal preconditioning",
+              "59": "Homing the blade holder",
+              "60": "Calibrating the camera offset",
+              "61": "Calibrating the blade holder",
+              "62": "Testing the hotend change",
+              "63": "Waiting for the chamber temperature",
+              "64": "Preparing the hotend",
+              "65": "Calibrating nozzle clumping detection",
+              "66": "Purifying the chamber air",
+              "67": "Measuring the rotary attachment",
+              "68": "Moving to the purge chute",
+              "69": "Cooling the nozzle",
+              "70": "Centring the toolhead",
+              "71": "Arc fitting",
+              "72": "Detecting the hotend type",
+              "73": "Detecting build plate alignment",
+              "74": "Checking the bed for objects",
+              "75": "Checking under the bed for objects",
+              "76": "Purging before printing",
+              "77": "Preparing the AMS",
+              "255": "Idle",
+              "-1": "Idle"
+            },
+            "default": "Unknown"
+          }
+        }
+      }
+    },
+    {
+      "domain": "sensor",
+      "objectId": "print_progress",
+      "name": "Print progress",
+      "icon": "percent",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": "message.print.mc_percent"
+        }
+      },
+      "unitOfMeasurement": "%",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "remaining_time",
+      "name": "Remaining time",
+      "icon": "timer",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": "message.print.mc_remaining_time"
+        }
+      },
+      "unitOfMeasurement": "min",
+      "deviceClass": "duration",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "layer",
+      "name": "Layer",
+      "icon": "layers",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": "message.print.layer_num"
+        }
+      },
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "total_layers",
+      "name": "Total layers",
+      "icon": "layers",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": "message.print.total_layer_num"
+        }
+      },
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "speed_level",
+      "name": "Speed level",
+      "icon": "gauge",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": "message.print.spd_lvl"
+        }
+      },
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "print_name",
+      "name": "Print name",
+      "icon": "file-text",
+      "capabilities": {
+        "sensor_text": {}
+      },
+      "state": {
+        "sensor_text": {
+          "value": "message.print.subtask_name"
+        }
+      }
+    },
+    {
+      "domain": "sensor",
+      "objectId": "gcode_file",
+      "name": "G-code file",
+      "icon": "file",
+      "capabilities": {
+        "sensor_text": {}
+      },
+      "state": {
+        "sensor_text": {
+          "value": "message.print.gcode_file"
+        }
+      }
+    },
+    {
+      "domain": "sensor",
+      "objectId": "print_source",
+      "name": "Print source",
+      "icon": "cloud",
+      "capabilities": {
+        "sensor_text": {}
+      },
+      "state": {
+        "sensor_text": {
+          "value": {
+            "path": "message.print.print_type",
+            "map": {
+              "cloud": "Cloud",
+              "local": "Local",
+              "idle": "Idle",
+              "system": "System"
+            },
+            "default": "Unknown"
+          }
+        }
+      }
+    },
+    {
+      "domain": "binary_sensor",
+      "objectId": "print_error",
+      "name": "Print error",
+      "icon": "triangle-alert",
+      "capabilities": {
+        "sensor_binary": {}
+      },
+      "state": {
+        "sensor_binary": {
+          "isOn": {
+            "path": "message.print.print_error",
+            "map": {
+              "0": false
+            },
+            "default": true
+          }
+        }
+      },
+      "deviceClass": "problem"
+    },
+    {
+      "domain": "binary_sensor",
+      "objectId": "health_alerts",
+      "name": "Health alerts",
+      "icon": "triangle-alert",
+      "capabilities": {
+        "sensor_binary": {}
+      },
+      "state": {
+        "sensor_binary": {
+          "isOn": {
+            "path": "message.print.hms[0]",
+            "present": true
+          }
+        }
+      },
+      "deviceClass": "problem"
+    },
+    {
+      "domain": "sensor",
+      "objectId": "part_cooling_fan",
+      "name": "Part cooling fan",
+      "icon": "fan",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.cooling_fan_speed",
+            "map": {
+              "0": 0,
+              "1": 10,
+              "2": 20,
+              "3": 20,
+              "4": 30,
+              "5": 40,
+              "6": 40,
+              "7": 50,
+              "8": 60,
+              "9": 60,
+              "10": 70,
+              "11": 80,
+              "12": 80,
+              "13": 90,
+              "14": 100,
+              "15": 100
+            }
+          }
+        }
+      },
+      "unitOfMeasurement": "%",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "auxiliary_fan",
+      "name": "Auxiliary fan",
+      "icon": "fan",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.big_fan1_speed",
+            "map": {
+              "0": 0,
+              "1": 10,
+              "2": 20,
+              "3": 20,
+              "4": 30,
+              "5": 40,
+              "6": 40,
+              "7": 50,
+              "8": 60,
+              "9": 60,
+              "10": 70,
+              "11": 80,
+              "12": 80,
+              "13": 90,
+              "14": 100,
+              "15": 100
+            }
+          }
+        }
+      },
+      "unitOfMeasurement": "%",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "chamber_fan",
+      "name": "Chamber fan",
+      "icon": "fan",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.big_fan2_speed",
+            "map": {
+              "0": 0,
+              "1": 10,
+              "2": 20,
+              "3": 20,
+              "4": 30,
+              "5": 40,
+              "6": 40,
+              "7": 50,
+              "8": 60,
+              "9": 60,
+              "10": 70,
+              "11": 80,
+              "12": 80,
+              "13": 90,
+              "14": 100,
+              "15": 100
+            }
+          }
+        }
+      },
+      "unitOfMeasurement": "%",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "heatbreak_fan",
+      "name": "Heatbreak fan",
+      "icon": "fan",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.heatbreak_fan_speed",
+            "map": {
+              "0": 0,
+              "1": 10,
+              "2": 20,
+              "3": 20,
+              "4": 30,
+              "5": 40,
+              "6": 40,
+              "7": 50,
+              "8": 60,
+              "9": 60,
+              "10": 70,
+              "11": 80,
+              "12": 80,
+              "13": 90,
+              "14": 100,
+              "15": 100
+            }
+          }
+        }
+      },
+      "unitOfMeasurement": "%",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "wifi_signal",
+      "name": "Wi-Fi signal",
+      "icon": "wifi",
+      "capabilities": {
+        "sensor_text": {}
+      },
+      "state": {
+        "sensor_text": {
+          "value": "message.print.wifi_signal"
+        }
+      }
+    },
+    {
+      "domain": "binary_sensor",
+      "objectId": "timelapse",
+      "name": "Timelapse",
+      "icon": "film",
+      "capabilities": {
+        "sensor_binary": {}
+      },
+      "state": {
+        "sensor_binary": {
+          "isOn": {
+            "path": "message.print.ipcam.timelapse",
+            "equals": "enable"
+          }
+        }
+      }
+    },
+    {
+      "domain": "binary_sensor",
+      "objectId": "developer_mode",
+      "name": "LAN developer mode",
+      "icon": "code",
+      "capabilities": {
+        "sensor_binary": {}
+      },
+      "state": {
+        "sensor_binary": {
+          "isOn": {
+            "path": "message.print.fun",
+            "bits": [29, 1],
+            "base": 16,
+            "equals": 0
+          }
+        }
+      }
+    },
+    {
+      "domain": "binary_sensor",
+      "objectId": "sd_card",
+      "name": "SD card",
+      "icon": "hard-drive",
+      "capabilities": {
+        "sensor_binary": {}
+      },
+      "state": {
+        "sensor_binary": {
+          "isOn": {
+            "path": "message.print.home_flag",
+            "bits": [8, 1],
+            "equals": 1
+          }
+        }
+      }
+    },
+    {
+      "domain": "sensor",
+      "objectId": "ams_humidity",
+      "name": "AMS humidity",
+      "icon": "droplets",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.ams.ams[0].humidity_raw",
+            "base": 10
+          }
+        }
+      },
+      "unitOfMeasurement": "%",
+      "deviceClass": "humidity",
+      "stateClass": "measurement",
+      "displayPrecision": 0
+    },
+    {
+      "domain": "sensor",
+      "objectId": "ams_temperature",
+      "name": "AMS temperature",
+      "icon": "thermometer",
+      "capabilities": {
+        "sensor_numeric": {}
+      },
+      "state": {
+        "sensor_numeric": {
+          "value": {
+            "path": "message.print.ams.ams[0].temp",
+            "base": 10
+          }
+        }
+      },
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement",
+      "displayPrecision": 1
+    },
+    {
+      "domain": "button",
+      "objectId": "pause",
+      "name": "Pause",
+      "icon": "pause",
+      "capabilities": {
+        "button": {}
+      },
+      "state": {},
+      "commands": {
+        "button.press": {
+          "op": "publish",
+          "args": {
+            "topic": [
+              "device",
+              {
+                "$": "device.segments[1]"
+              },
+              "request"
+            ],
+            "payload": {
+              "print": {
+                "sequence_id": "0",
+                "command": "pause",
+                "param": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "domain": "button",
+      "objectId": "resume",
+      "name": "Resume",
+      "icon": "play",
+      "capabilities": {
+        "button": {}
+      },
+      "state": {},
+      "commands": {
+        "button.press": {
+          "op": "publish",
+          "args": {
+            "topic": [
+              "device",
+              {
+                "$": "device.segments[1]"
+              },
+              "request"
+            ],
+            "payload": {
+              "print": {
+                "sequence_id": "0",
+                "command": "resume",
+                "param": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "domain": "button",
+      "objectId": "stop",
+      "name": "Stop print",
+      "icon": "square",
+      "capabilities": {
+        "button": {}
+      },
+      "state": {},
+      "commands": {
+        "button.press": {
+          "op": "publish",
+          "args": {
+            "topic": [
+              "device",
+              {
+                "$": "device.segments[1]"
+              },
+              "request"
+            ],
+            "payload": {
+              "print": {
+                "sequence_id": "0",
+                "command": "stop",
+                "param": ""
+              }
+            }
+          }
+        }
+      },
+      "deviceClass": "stop"
+    },
+    {
+      "domain": "button",
+      "objectId": "refresh",
+      "name": "Refresh",
+      "icon": "refresh-cw",
+      "capabilities": {
+        "button": {}
+      },
+      "state": {},
+      "commands": {
+        "button.press": {
+          "op": "publish",
+          "args": {
+            "topic": [
+              "device",
+              {
+                "$": "device.segments[1]"
+              },
+              "request"
+            ],
+            "payload": {
+              "pushing": {
+                "sequence_id": "0",
+                "command": "pushall",
+                "version": 1,
+                "push_target": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

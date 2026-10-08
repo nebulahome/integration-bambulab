@@ -1,0 +1,23 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/driver.schema.json",
+  "id": "printer",
+  "name": "X1 series printer",
+  "transport": "mqtt",
+  "models": ["X1", "X1C", "X1E"],
+  "modelCodes": {
+    "3DPrinter-X1": "X1",
+    "BL-P002": "X1",
+    "3DPrinter-X1-Carbon": "X1C",
+    "BL-P001": "X1C",
+    "C13": "X1E"
+  },
+  "modelSeries": {
+    "X1": "X series",
+    "X1C": "X series",
+    "X1E": "X series"
+  },
+  "defaultIcon": "printer",
+  "kind": "declarative",
+  "profile": "./profile.json",
+  "setup": "./setup.json"
+}

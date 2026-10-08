@@ -1,0 +1,27 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/setup.schema.json",
+  "transport": {
+    "constants": { "username": "bblp", "shouldVerifyCertificate": false },
+    "fields": [
+      {
+        "key": "url",
+        "type": "text",
+        "label": "Printer address",
+        "help": "mqtts://<the printer's IP>:8883. The printer only speaks MQTT over TLS, on port 8883; its IP is on the screen under the network settings.",
+        "placeholder": "mqtts://192.168.1.60:8883",
+        "isRequired": true,
+        "pattern": "^mqtts://[^/ ]+$",
+        "patternMessage": "Must start with mqtts:// - the printer only speaks TLS - like mqtts://192.168.1.60:8883."
+      },
+      {
+        "key": "password",
+        "type": "secret",
+        "label": "Access code",
+        "help": "Eight characters, on the printer's screen next to LAN mode.",
+        "isRequired": true,
+        "minLength": 8,
+        "maxLength": 8
+      }
+    ]
+  }
+}
