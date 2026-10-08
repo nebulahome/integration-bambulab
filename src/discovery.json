@@ -1,0 +1,11 @@
+{
+  "$schema": "../node_modules/@nebulahome/integration-sdk/schemas/discovery.schema.json",
+  "listen": [{ "mdns": "_example-lamp._tcp" }],
+  "match": [{ "path": "txt.md", "exists": true }],
+  "identity": {
+    "externalId": "txt.id",
+    "name": "instance",
+    "model": "txt.md",
+    "swVersion": "txt.fw"
+  }
+}

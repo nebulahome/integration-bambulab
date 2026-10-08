@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/driver.schema.json",
+  "id": "lamp",
+  "name": "Lamp",
+  "transport": "http",
+  "models": ["Desk Lamp", "Floor Lamp"],
+  "modelCodes": { "EL-D1": "Desk Lamp", "EL-F1": "Floor Lamp" },
+  "defaultIcon": "light",
+  "kind": "declarative",
+  "profile": "./profile.json",
+  "setup": "./setup.json"
+}

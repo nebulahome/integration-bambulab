@@ -1,0 +1,11 @@
+# Development happens on Windows, CI runs on Linux: LF everywhere.
+* text=auto eol=lf
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.ico  binary
+*.woff2 binary
+
+pnpm-lock.yaml -diff linguist-generated=true

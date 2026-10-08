@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/@nebulahome/integration-sdk/schemas/setup.schema.json",
+  "transport": {
+    "fields": [
+      {
+        "key": "host",
+        "type": "text",
+        "label": "Address",
+        "help": "The lamp on the network, with its port when it is not 80.",
+        "placeholder": "192.168.1.60",
+        "isRequired": true,
+        "pattern": "^[A-Za-z0-9.-]+(:[0-9]{1,5})?$",
+        "patternMessage": "An IP or host name, with :port - no http:// and no path."
+      }
+    ]
+  },
+  "polling": { "default": 10, "min": 2, "warnBelow": 5 }
+}

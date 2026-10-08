@@ -1,0 +1,17 @@
+node_modules/
+coverage/
+*.tsbuildinfo
+*.log
+
+# What the build writes, and what pack makes of it.
+/dist/
+*.tgz
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

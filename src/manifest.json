@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/@nebulahome/integration-sdk/schemas/manifest.schema.json",
+  "id": "example",
+  "name": "Example",
+  "description": "Example lamps on your own network, spoken to directly over their HTTP API.",
+  "url": "https://example.com",
+  "color": "#E8A33D",
+  "logo": "./logo.svg",
+  "internetRequired": false
+}

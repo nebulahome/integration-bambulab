@@ -1,0 +1,53 @@
+# Releases the integration when a version tag is pushed: `v` and package.json's version, `v0.1.0`
+# (README.md, Releasing).
+#
+# It checks the sources the way the hub reads a bundle, type-checks and tests them, builds the
+# vendor into dist/<vendor>/, packs it into `<vendor>-<version>.tgz`, and publishes a GitHub
+# release with that one archive. The Community Hub imports the release of a repository named
+# `integration-<vendor>` (pack refuses any other name on GitHub Actions). The repository must be
+# public: an installation downloads the archive without a token.
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check the tag is the package's version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::The tag is $GITHUB_REF_NAME, package.json says $version"
+            exit 1
+          fi
+
+      - run: pnpm nebulahome-integration validate
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm nebulahome-integration build
+      - run: pnpm nebulahome-integration pack
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          archive=$(ls *.tgz)
+          gh release create "$GITHUB_REF_NAME" "$archive" \
+            --title "$GITHUB_REF_NAME" --generate-notes
