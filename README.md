@@ -257,23 +257,8 @@ and in LAN mode, the printer is idle and quiet: a P1 or an A1 reports on change,
 setting on its screen, or turning its light on, gives the hub something to hear.
 
 Nothing else here is claimed as tried on a printer: the other families and their packed readings,
-the camera, discovery and the commands are written from the sources below and tested against fakes.
-
-## Sources
-
-Bambu Lab does not document the LAN protocol; what is here comes from:
-
-- [Bambu Studio](https://github.com/bambulab/BambuStudio)'s printer definitions, by Bambu Lab
-  (AGPL-3.0): the model codes a printer announces.
-- [ha-bambulab](https://github.com/greghesp/ha-bambulab), the Home Assistant integration by Greg
-  Hesp and contributors (MIT licence): read as the reference for the report's fields and the
-  entities - the packed temperatures, stage and status in words, the print's name, file and
-  source, errors and health alerts, fans, Wi-Fi, timelapse, developer mode, door, SD card, the AMS,
-  the buttons, both light bars.
-- The LAN-mode protocol as documented by the people who reverse-engineered it, and the payloads the
-  community has recorded from real printers.
-
-Bambu Lab and its logo are trademarks of Bambu Lab; this integration is not made or endorsed by it.
+the camera, discovery and the commands are written from the open-source implementations and
+tested against fakes.
 
 ## Development
 

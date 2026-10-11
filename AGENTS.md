@@ -82,6 +82,10 @@ platform from its local folder, with no restart.
   out, and the README says so. Do not ship battery devices that sleep (door sensors, H&T, flood
   sensors) unless the vendor has a listener that receives what they push when they wake.
 - Never point a test at a real device or the network.
+- **Events before polling, always.** When the device or the vendor offers a way to push changes -
+  MQTT topics, a WebSocket or event stream, UDP notifications, webhooks, a long-poll that returns
+  on change - use it, and do not poll. Poll only when nothing pushes, or for the values the
+  pushed events never carry. A driver that polls a device able to push is wrong, even if it works.
 
 ## Workflow
 
@@ -110,6 +114,8 @@ table **before** writing files:
   A different layout of components, claim or payload is a new driver; a new generation with the
   same layout is more `models` on the same driver.
 - Prefer the local way when the device has one; `internetRequired` comes from that fact.
+- Among the ways a device is reached, prefer the one that pushes events over one that must be
+  polled (see [Fixed rules](#fixed-rules)).
 - Confidence is `verified` (official docs or a device you can reach), `ported` (read from another
   open-source implementation) or `guess`. Do not implement `guess` rows.
 - A big brand ships a coherent first family - the models you were asked for, or the ones with a
@@ -122,16 +128,18 @@ Ask only when the brand itself is ambiguous (two companies, a product line that 
 For each family, in this order:
 
 1. The vendor's own documentation: local API, MQTT topics, HTTP endpoints, authentication, TLS,
-   identity fields.
+   identity fields, and above all whether the device pushes its changes (events, notifications,
+   subscriptions) or can only be asked.
 2. Similar open-source implementations - projects on GitHub, libraries that already speak the
    protocol. Their source is where request formats, payload layouts and model tables live. Before
    calling a device "cloud only", check whether someone already talks to it locally.
 3. Other maintained projects in any language when the first ones are thin or contradict each other.
 
-Write down, per family: sources, transport and authentication (what is fixed, what the owner
-types), the claim field and its values, state paths, command payloads, what you are deliberately
-leaving out. These notes become the README's sections. Research wins on protocol facts; the
-person who asked wins on scope.
+Write down, per family: transport and authentication (what is fixed, what the owner types),
+whether it pushes events or must be polled, the claim field and its values, state paths, command
+payloads, what you are deliberately leaving out. These notes become the README's sections; the
+sources you read are not listed in the README. Research wins on protocol facts; the person who
+asked wins on scope.
 
 ### 4. Choose the shape
 
@@ -154,8 +162,10 @@ The platform's own transports are `http` and `mqtt`; everything else is code in 
 vendor's official site), `color` (brand colour, `#RRGGBB`), `logo`, `internetRequired`; plus
 `setup`, `transports` and `requires` when they apply.
 
-**Logo** - SVG (or PNG), at most 64 KiB: a simple monogram in the vendor colour, not a trademark
-wordmark. `{ "path": "./logo.svg", "padding": 2 }` when the mark touches the edge.
+**Logo** - SVG (or PNG), at most 64 KiB. When available, always prefer the company's official
+logo or mark (an SVG from the vendor's site, brand page or press kit); draw a simple monogram in
+the vendor colour only when no official logo can be found. `{ "path": "./logo.svg", "padding": 2 }`
+when the mark touches the edge.
 
 **`src/discovery.json`** (optional; without it devices are only added by hand - say so in the
 README):
@@ -199,8 +209,9 @@ README):
     `installedVersion`, `latestVersion`, `isInstalling`, `progress`; command `update.install` when
     the API can install it). Say in the README when the API cannot.
 
-**Polling.** A driver whose profile has a `poll` subscription declares, in its `setup.json`,
-`"polling": { "default": 10, "min": 2, "warnBelow": 5 }` in **seconds**. The owner's choice
+**Polling** is the last resort: use it only when the device pushes nothing (see
+[Fixed rules](#fixed-rules)). A driver whose profile has a `poll` subscription declares, in its
+`setup.json`, `"polling": { "default": 10, "min": 2, "warnBelow": 5 }` in **seconds**. The owner's choice
 replaces every `everyMs` of the profile, so `default × 1000` equals the profile's `everyMs`. A
 driver with no `poll` has no `polling`, and nobody declares a field called `pollInterval`. Take
 the numbers from the device: how often its own app or other implementations poll it, and where it
@@ -365,11 +376,6 @@ asks: each field, and where the owner finds the value.>
 
 <Models and features left out, and why: cloud-only, sleeping battery devices, firmware too old,
 no way to confirm a payload. "None" if nothing.>
-
-## Sources
-
-- <The vendor's documentation of the protocol.>
-- <Open-source implementations read as a reference for the protocol.>
 
 ## Development
 
