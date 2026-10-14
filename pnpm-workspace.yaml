@@ -1,0 +1,5 @@
+# pnpm refuses a package published less than a day ago (minimumReleaseAge), in the release
+# workflow's frozen install too. The SDK is NebulaHome's own: a release of it installs the day it
+# comes out.
+minimumReleaseAgeExclude:
+  - '@nebulahome/integration-sdk'
