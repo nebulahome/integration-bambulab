@@ -235,7 +235,9 @@ Rewrite `tests/example.test.ts` for the vendor (rename it `tests/<vendor>.test.t
   `subscriptions` polls at the owner's interval.
 - `identify(vendor, { announcement, probed })` - discovery proposes the right driver and model.
 - A transport of the vendor's own: `createFakeSdk()` gives fake UDP sockets you `deliver` to and
-  read `sent` from (see `examples/lan.test.ts`); pass other SDK pieces as `overrides`.
+  read `sent` from (see `examples/lan.test.ts`), and fake WebSockets (`webSockets`) you
+  `open`, `deliver` to and `drop` - with `{ status: 401 }` for credentials the
+  server refuses - reading their `headers` and `sent`; pass other SDK pieces as `overrides`.
 
 ### 7. Gates
 
